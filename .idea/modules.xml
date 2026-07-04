@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/catalog.main.iml" filepath="$PROJECT_DIR$/.idea/modules/catalog.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/catalog.test.iml" filepath="$PROJECT_DIR$/.idea/modules/catalog.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/daenamu-harness-prj.iml" filepath="$PROJECT_DIR$/.idea/daenamu-harness-prj.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/episode.main.iml" filepath="$PROJECT_DIR$/.idea/modules/episode.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/episode.test.iml" filepath="$PROJECT_DIR$/.idea/modules/episode.test.iml" />
     </modules>
   </component>
 </project>
