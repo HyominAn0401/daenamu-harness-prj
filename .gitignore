@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# IDE local state
+.idea/workspace.xml
+.idea/modules/
+*.iml
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Harbor installer/runtime artifacts
+infra/harbor/*.tgz
+infra/harbor/harbor/
+infra/harbor/data/
+infra/harbor/common/
+infra/harbor/log/
+infra/harbor/secret/
