@@ -1,0 +1,12 @@
+kubeconfig_path  = "~/.kube/config"
+kube_context     = "kind-daenamu"
+namespace        = "daenamu"
+release_name     = "daenamu"
+image_registry   = "hub.daenamu.local:8088"
+image_project    = "daenamu"
+image_tag        = "local"
+create_namespace = true
+image_pull_policy = "IfNotPresent"
+image_pull_secret_name = ""
+service_type = "ClusterIP"
+helm_timeout_seconds = 300

@@ -1,0 +1,83 @@
+global:
+  imageRegistry: hub.daenamu.local:8088
+  imageProject: daenamu
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+
+defaults:
+  replicas: 1
+  service:
+    type: ClusterIP
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  probes:
+    enabled: true
+    path: /actuator/health
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 6
+
+services:
+  catalog:
+    enabled: true
+    replicas: 1
+    image:
+      repository: catalog
+      tag: local
+    service:
+      type: ClusterIP
+      port: 8080
+      targetPort: 8080
+    probes:
+      path: /actuator/health
+    env:
+      EPISODE_BASE_URL: http://episode:8081
+
+  episode:
+    enabled: true
+    replicas: 1
+    image:
+      repository: episode
+      tag: local
+    service:
+      type: ClusterIP
+      port: 8081
+      targetPort: 8081
+    probes:
+      path: /actuator/health
+    env:
+      PLAYBACK_BASE_URL: http://playback:8082
+
+  playback:
+    enabled: true
+    replicas: 1
+    image:
+      repository: playback
+      tag: local
+    service:
+      type: ClusterIP
+      port: 8082
+      targetPort: 8082
+    probes:
+      path: /actuator/health
+    env: {}
+
+  frontend:
+    enabled: true
+    replicas: 1
+    image:
+      repository: frontend
+      tag: local
+    service:
+      type: ClusterIP
+      port: 80
+      targetPort: 80
+    probes:
+      enabled: false
+    env: {}

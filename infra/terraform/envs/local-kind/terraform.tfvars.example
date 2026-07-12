@@ -1,0 +1,5 @@
+cluster_name     = "daenamu"
+node_image       = "kindest/node:v1.30.0"
+kubeconfig_path  = "~/.kube/config"
+harbor_registry  = "hub.daenamu.local:8088"
+expose_http_port = 8089

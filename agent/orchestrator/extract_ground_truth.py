@@ -145,6 +145,7 @@ def discover_helm_services() -> list[HelmServiceInfo]:
     services: list[HelmServiceInfo] = []
     registry = ""
     project = ""
+    top_level: str | None = None
     current: str | None = None
     section: str | None = None
     data: dict[str, dict[str, object]] = {}
@@ -156,11 +157,20 @@ def discover_helm_services() -> list[HelmServiceInfo]:
         stripped = raw_line.strip()
         indent = len(raw_line) - len(raw_line.lstrip(" "))
 
+        if indent == 0 and stripped.endswith(":"):
+            top_level = stripped[:-1]
+            current = None
+            section = None
+            continue
+
         if indent == 2 and stripped.startswith("imageRegistry:"):
             registry = clean_value(stripped.split(":", 1)[1])
             continue
         if indent == 2 and stripped.startswith("imageProject:"):
             project = clean_value(stripped.split(":", 1)[1])
+            continue
+
+        if top_level != "services":
             continue
 
         if indent == 2 and stripped.endswith(":"):
