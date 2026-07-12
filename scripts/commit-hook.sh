@@ -11,4 +11,7 @@ scripts/run-agent.sh
 
 echo
 echo "[DAENAMU Agent Harness] Ground truth extracted."
-echo "Compare the output with README.md and patch README.md when drift is confirmed."
+echo "Reports:"
+echo "- agent/reports/latest-ground-truth.md"
+echo "- agent/reports/latest-ground-truth.json"
+echo "Codex should compare these reports with README.md and patch README.md when drift is confirmed."

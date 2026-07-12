@@ -24,17 +24,20 @@ scripts/run-agent.sh
 scripts/run-agent.sh --json
 ```
 
+실행 결과는 콘솔에 출력되며, 아래 파일에도 저장된다.
+
+```text
+agent/reports/latest-ground-truth.md
+agent/reports/latest-ground-truth.json
+```
+
 커밋 전에 ground truth 추출을 자동 실행하려면 pre-commit hook을 설치한다.
 
 ```bash
 scripts/install-commit-hook.sh
 ```
 
-### 현재 README 드리프트 예시
-
-아래 표와 사용 시나리오에는 일부러 오래된 서비스명과 API 경로가 남아 있다.
-이 프로젝트의 핵심은 리팩토링 이후 에이전트가 코드 근거를 확인하고 README 전체에서
-이런 드리프트를 찾아 수정하는 것이다.
+### Main APIs
 
 | Service | Port | Main APIs                                                  | Downstream |
 |---------| ---: |------------------------------------------------------------|------------|
@@ -44,6 +47,42 @@ scripts/install-commit-hook.sh
 
 ```text
 frontend -> catalog -> episode -> playback
+```
+
+### Helm/Harbor 배포 방향
+
+로컬 배포 구조는 Harbor registry와 Helm chart를 기준으로 정리한다.
+
+```text
+Terraform local-kind -> KinD
+source code -> Jenkins build -> Harbor -> Terraform local -> Helm release -> Kubernetes runtime
+```
+
+Helm chart 경로:
+
+```text
+infra/helm/daenamu
+```
+
+기본 이미지 registry:
+
+```text
+hub.daenamu.local:8088/daenamu
+```
+
+Terraform 역할:
+
+```text
+infra/terraform/envs/local-kind  # KinD cluster 생성
+infra/terraform/envs/local       # DAENAMU Helm release 배포
+```
+
+수동 또는 별도 준비로 남기는 작업:
+
+```text
+Harbor 설치/기동
+Docker image build/push 자동화는 향후 Jenkins에서 담당
+Jaeger/Prometheus/Grafana 설치
 ```
 
 ## 3. 사용 시나리오

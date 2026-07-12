@@ -14,7 +14,7 @@
 - Spring Boot 컨트롤러가 변경된 경우
 - `application.properties` 또는 환경 변수 기본값이 변경된 경우
 - 서비스 간 호출 클라이언트 코드가 변경된 경우
-- Kubernetes manifest가 추가되거나 변경된 경우
+- Helm chart 또는 `values.yaml`이 추가되거나 변경된 경우
 - README의 서비스 이름, API 경로, 포트, 호출 흐름이 실제 코드와 맞지 않는 경우
 
 MVP 단계에서 자동 패치 대상은 루트 `README.md` 하나뿐이다. 단, README 내부에서는
@@ -31,7 +31,7 @@ MVP 단계에서 자동 패치 대상은 루트 `README.md` 하나뿐이다. 단
 - 백엔드 컨트롤러 코드
 - 백엔드 설정 파일
 - 서비스 클라이언트 코드
-- Kubernetes manifest, 존재하는 경우
+- Helm chart와 `values.yaml`, 존재하는 경우
 
 변경 파일 목록이 없으면 전체 대상 파일을 스캔한다.
 
@@ -42,7 +42,7 @@ MVP 단계에서 자동 패치 대상은 루트 `README.md` 하나뿐이다. 단
 1. `backend/*/src/main/java/**/controller/*.java`
 2. `backend/*/src/main/resources/application.properties`
 3. `backend/*/src/main/java/**/client/*.java`
-4. `infra/k8s/base/*.yaml` 또는 `infra/k8s/base/*.yml`
+4. `infra/helm/daenamu/Chart.yaml`과 `infra/helm/daenamu/values.yaml`
 5. MCP를 통해 확인한 런타임 상태
 6. OpenAPI 또는 live endpoint 메타데이터
 7. 기존 `README.md`
@@ -62,9 +62,13 @@ backend/episode/src/main/resources/application.properties
 backend/playback/src/main/resources/application.properties
 backend/catalog/src/main/java/com/daenamu/catalog/client/EpisodeClient.java
 backend/episode/src/main/java/com/daenamu/episode/client/PlaybackClient.java
+infra/helm/daenamu/values.yaml
+infra/terraform/envs/local-kind/main.tf
+infra/terraform/envs/local/main.tf
 ```
 
-`infra/k8s/base/`가 존재하면 그 안의 YAML도 함께 확인한다.
+`infra/helm/daenamu/`가 존재하면 `Chart.yaml`, `values.yaml`, `templates/`를 함께 확인한다.
+`infra/terraform/`이 존재하면 local-kind, local 환경과 modules 디렉터리의 `.tf` 파일도 확인한다.
 
 ## 5. 추출해야 하는 정보
 
@@ -132,19 +136,34 @@ catalog -> episode -> playback
 
 ### 5.4 인프라 정보
 
-`infra/k8s/base/`가 존재하면 다음을 추출한다.
+`infra/helm/daenamu/values.yaml`이 존재하면 다음을 추출한다.
 
-- `kind: Deployment`
-- `kind: Service`
-- metadata name
-- labels
-- container image
-- container port
+- chart name/version
+- global image registry
+- global image project
+- service name
+- image repository
+- image tag
 - service port
 - targetPort
+- service-to-service environment variables
 
-해당 디렉터리가 없으면 README에 Kubernetes 세부값을 새로 만들어 쓰지 않는다.
-대신 "현재 repository에는 `infra/k8s/base`가 없다"라고 보고한다.
+`infra/terraform/envs/local-kind`가 존재하면 다음을 추출한다.
+
+- KinD cluster name
+- KinD node image
+- kubeconfig path
+- Harbor registry mirror
+
+`infra/terraform/envs/local`이 존재하면 다음을 추출한다.
+
+- Helm release name
+- namespace
+- chart path
+- image registry/project/tag
+
+해당 chart가 없으면 README에 Kubernetes/Helm 세부값을 새로 만들어 쓰지 않는다.
+대신 "현재 repository에는 `infra/helm/daenamu` chart가 없다"라고 보고한다.
 
 ## 6. README 비교 절차
 
@@ -157,7 +176,7 @@ catalog -> episode -> playback
    - API path 불일치
    - port 불일치
    - 호출 흐름 불일치
-   - 존재하지 않는 인프라 구성 설명
+   - 존재하지 않는 Helm/Harbor/Kubernetes 구성 설명
    - 현재 코드에 없는 옛 서비스명
 
 ## 7. 패치 원칙
@@ -212,7 +231,8 @@ README 드리프트 검사 결과
 - backend/catalog/src/main/resources/application.properties
 
 불확실한 항목:
-- infra/k8s/base 디렉터리가 없어 Kubernetes manifest 검증은 수행하지 못함
+- infra/helm/daenamu chart가 없어 Helm 배포 값 검증은 수행하지 못함
+
 ```
 
 드리프트가 없으면 다음처럼 보고한다.

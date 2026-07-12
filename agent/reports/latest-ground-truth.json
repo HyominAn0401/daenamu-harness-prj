@@ -1,0 +1,89 @@
+{
+  "services": [
+    {
+      "directory": "catalog",
+      "app_name": "catalog",
+      "port": "8080",
+      "controller": "backend/catalog/src/main/java/com/daenamu/catalog/controller/CatalogController.java",
+      "properties": "backend/catalog/src/main/resources/application.properties",
+      "apis": [
+        "GET /api/catalog/dramas",
+        "GET /api/catalog/dramas/{dramaId}"
+      ],
+      "downstream": "episode"
+    },
+    {
+      "directory": "episode",
+      "app_name": "episode",
+      "port": "8081",
+      "controller": "backend/episode/src/main/java/com/daenamu/episode/controller/EpisodeController.java",
+      "properties": "backend/episode/src/main/resources/application.properties",
+      "apis": [
+        "GET /api/episodes",
+        "GET /api/episodes/{episodeId}"
+      ],
+      "downstream": "playback"
+    },
+    {
+      "directory": "playback",
+      "app_name": "playback",
+      "port": "8082",
+      "controller": "backend/playback/src/main/java/com/daenamu/playback/controller/PlaybackController.java",
+      "properties": "backend/playback/src/main/resources/application.properties",
+      "apis": [
+        "GET /api/playback/{episodeId}"
+      ],
+      "downstream": "-"
+    }
+  ],
+  "helm": [
+    {
+      "name": "catalog",
+      "image": "hub.daenamu.local:8088/daenamu/catalog:local",
+      "service_port": "8080",
+      "target_port": "8080",
+      "env": {
+        "EPISODE_BASE_URL": "http://episode:8081"
+      }
+    },
+    {
+      "name": "episode",
+      "image": "hub.daenamu.local:8088/daenamu/episode:local",
+      "service_port": "8081",
+      "target_port": "8081",
+      "env": {
+        "PLAYBACK_BASE_URL": "http://playback:8082"
+      }
+    },
+    {
+      "name": "playback",
+      "image": "hub.daenamu.local:8088/daenamu/playback:local",
+      "service_port": "8082",
+      "target_port": "8082",
+      "env": {}
+    },
+    {
+      "name": "frontend",
+      "image": "hub.daenamu.local:8088/daenamu/frontend:local",
+      "service_port": "80",
+      "target_port": "80",
+      "env": {}
+    }
+  ],
+  "terraform": [
+    "infra/terraform/envs/local/main.tf",
+    "infra/terraform/envs/local/outputs.tf",
+    "infra/terraform/envs/local/variables.tf",
+    "infra/terraform/envs/local-kind/main.tf",
+    "infra/terraform/envs/local-kind/outputs.tf",
+    "infra/terraform/envs/local-kind/variables.tf",
+    "infra/terraform/modules/daenamu-helm/main.tf",
+    "infra/terraform/modules/daenamu-helm/outputs.tf",
+    "infra/terraform/modules/daenamu-helm/variables.tf",
+    "infra/terraform/modules/kind-cluster/main.tf",
+    "infra/terraform/modules/kind-cluster/outputs.tf",
+    "infra/terraform/modules/kind-cluster/variables.tf"
+  ],
+  "topology": "frontend -> catalog -> episode -> playback",
+  "uncertain": []
+}
