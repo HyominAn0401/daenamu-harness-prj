@@ -19,7 +19,19 @@ variable "kubeconfig_path" {
 variable "harbor_registry" {
   description = "Local Harbor registry host:port used by KinD containerd mirrors."
   type        = string
-  default     = "hub.daenamu.local:8088"
+  default     = "hub.daenamu.local:8083"
+}
+
+variable "harbor_mirror_endpoint" {
+  description = "Harbor endpoint reachable from KinD node containers. Docker Desktop resolves host.docker.internal to the host machine."
+  type        = string
+  default     = "host.docker.internal:8083"
+}
+
+variable "harbor_host_alias_ip" {
+  description = "Host IP mapped to hub.daenamu.local inside KinD node containers."
+  type        = string
+  default     = "192.168.65.254"
 }
 
 variable "expose_http_port" {

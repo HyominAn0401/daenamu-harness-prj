@@ -37,7 +37,7 @@ variable "chart_path" {
 variable "image_registry" {
   description = "Harbor registry host used by the Helm chart."
   type        = string
-  default     = "hub.daenamu.local:8088"
+  default     = "hub.daenamu.local:8083"
 }
 
 variable "image_project" {
@@ -61,7 +61,20 @@ variable "image_pull_policy" {
 variable "image_pull_secret_name" {
   description = "Optional imagePullSecret name for Harbor authentication. Leave empty for no secret."
   type        = string
+  default     = "harbor-regcred"
+}
+
+variable "harbor_username" {
+  description = "Harbor username used for image pulls."
+  type        = string
+  default     = "admin"
+}
+
+variable "harbor_password" {
+  description = "Harbor password used for image pulls."
+  type        = string
   default     = ""
+  sensitive   = true
 }
 
 variable "service_type" {

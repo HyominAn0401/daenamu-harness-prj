@@ -36,6 +36,8 @@ module "daenamu_helm" {
   image_tag              = var.image_tag
   image_pull_policy      = var.image_pull_policy
   image_pull_secret_name = var.image_pull_secret_name
+  harbor_username        = var.harbor_username
+  harbor_password        = var.harbor_password
   service_type           = var.service_type
   helm_timeout_seconds   = var.helm_timeout_seconds
   create_namespace       = var.create_namespace
