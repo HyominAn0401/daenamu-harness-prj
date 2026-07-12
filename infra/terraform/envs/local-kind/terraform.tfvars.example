@@ -1,5 +1,7 @@
-cluster_name     = "daenamu"
-node_image       = "kindest/node:v1.30.0"
-kubeconfig_path  = "~/.kube/config"
-harbor_registry  = "hub.daenamu.local:8088"
-expose_http_port = 8089
+cluster_name           = "daenamu"
+node_image             = "kindest/node:v1.30.0"
+kubeconfig_path        = "~/.kube/config"
+harbor_registry        = "hub.daenamu.local:8083"
+harbor_mirror_endpoint = "host.docker.internal:8083"
+harbor_host_alias_ip   = "192.168.65.254"
+expose_http_port       = 8089

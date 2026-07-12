@@ -11,6 +11,31 @@ resource "kubernetes_namespace" "this" {
   }
 }
 
+resource "kubernetes_secret" "harbor_pull" {
+  count = var.image_pull_secret_name != "" && var.harbor_username != "" && var.harbor_password != "" ? 1 : 0
+
+  metadata {
+    name      = var.image_pull_secret_name
+    namespace = var.namespace
+  }
+
+  type = "kubernetes.io/dockerconfigjson"
+
+  data = {
+    ".dockerconfigjson" = jsonencode({
+      auths = {
+        (var.image_registry) = {
+          username = var.harbor_username
+          password = var.harbor_password
+          auth     = base64encode("${var.harbor_username}:${var.harbor_password}")
+        }
+      }
+    })
+  }
+
+  depends_on = [kubernetes_namespace.this]
+}
+
 resource "helm_release" "this" {
   name      = var.release_name
   namespace = var.namespace
@@ -69,5 +94,8 @@ resource "helm_release" "this" {
     value = var.image_tag
   }
 
-  depends_on = [kubernetes_namespace.this]
+  depends_on = [
+    kubernetes_namespace.this,
+    kubernetes_secret.harbor_pull,
+  ]
 }

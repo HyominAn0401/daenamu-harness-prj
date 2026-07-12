@@ -38,6 +38,19 @@ variable "image_pull_secret_name" {
   type        = string
 }
 
+variable "harbor_username" {
+  description = "Harbor username used for Kubernetes imagePullSecret."
+  type        = string
+  default     = ""
+}
+
+variable "harbor_password" {
+  description = "Harbor password used for Kubernetes imagePullSecret."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 variable "service_type" {
   description = "Default Kubernetes Service type for DAENAMU services."
   type        = string

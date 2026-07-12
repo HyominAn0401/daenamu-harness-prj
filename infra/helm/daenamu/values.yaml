@@ -1,5 +1,5 @@
 global:
-  imageRegistry: hub.daenamu.local:8088
+  imageRegistry: hub.daenamu.local:8083
   imageProject: daenamu
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
@@ -16,7 +16,7 @@ defaults:
       cpu: 500m
       memory: 512Mi
   probes:
-    enabled: true
+    enabled: false
     path: /actuator/health
     initialDelaySeconds: 20
     periodSeconds: 10
