@@ -17,10 +17,10 @@ Ground Truth 추출 결과
 - backend/playback/src/main/resources/application.properties
 
 Helm 배포 정보:
-- catalog: image hub.daenamu.local:8088/daenamu/catalog:local, service port 8080, targetPort 8080
-- episode: image hub.daenamu.local:8088/daenamu/episode:local, service port 8081, targetPort 8081
-- playback: image hub.daenamu.local:8088/daenamu/playback:local, service port 8082, targetPort 8082
-- frontend: image hub.daenamu.local:8088/daenamu/frontend:local, service port 80, targetPort 80
+- catalog: image hub.daenamu.local:8083/daenamu/catalog:local, service port 8080, targetPort 8080
+- episode: image hub.daenamu.local:8083/daenamu/episode:local, service port 8081, targetPort 8081
+- playback: image hub.daenamu.local:8083/daenamu/playback:local, service port 8082, targetPort 8082
+- frontend: image hub.daenamu.local:8083/daenamu/frontend:local, service port 80, targetPort 80
 
 Terraform 구성 파일:
 - infra/terraform/envs/local/main.tf
@@ -35,3 +35,6 @@ Terraform 구성 파일:
 - infra/terraform/modules/kind-cluster/main.tf
 - infra/terraform/modules/kind-cluster/outputs.tf
 - infra/terraform/modules/kind-cluster/variables.tf
+- infra/terraform/modules/observability/main.tf
+- infra/terraform/modules/observability/outputs.tf
+- infra/terraform/modules/observability/variables.tf

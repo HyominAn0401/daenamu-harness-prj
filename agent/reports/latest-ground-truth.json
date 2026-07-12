@@ -39,32 +39,63 @@
   "helm": [
     {
       "name": "catalog",
-      "image": "hub.daenamu.local:8088/daenamu/catalog:local",
+      "image": "hub.daenamu.local:8083/daenamu/catalog:local",
       "service_port": "8080",
       "target_port": "8080",
       "env": {
-        "EPISODE_BASE_URL": "http://episode:8081"
+        "EPISODE_BASE_URL": "http://episode:8081",
+        "JAVA_TOOL_OPTIONS": "-javaagent:/app/opentelemetry-javaagent.jar",
+        "MANAGEMENT_OTLP_TRACING_ENDPOINT": "http://jaeger-collector.observability:4318/v1/traces",
+        "MANAGEMENT_TRACING_SAMPLING_PROBABILITY": "1.0",
+        "OTEL_EXPORTER_OTLP_ENDPOINT": "http://jaeger-collector.observability:4318",
+        "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+        "OTEL_LOGS_EXPORTER": "none",
+        "OTEL_METRICS_EXPORTER": "none",
+        "OTEL_PROPAGATORS": "tracecontext,baggage",
+        "OTEL_SERVICE_NAME": "catalog",
+        "OTEL_TRACES_EXPORTER": "otlp"
       }
     },
     {
       "name": "episode",
-      "image": "hub.daenamu.local:8088/daenamu/episode:local",
+      "image": "hub.daenamu.local:8083/daenamu/episode:local",
       "service_port": "8081",
       "target_port": "8081",
       "env": {
-        "PLAYBACK_BASE_URL": "http://playback:8082"
+        "PLAYBACK_BASE_URL": "http://playback:8082",
+        "JAVA_TOOL_OPTIONS": "-javaagent:/app/opentelemetry-javaagent.jar",
+        "MANAGEMENT_OTLP_TRACING_ENDPOINT": "http://jaeger-collector.observability:4318/v1/traces",
+        "MANAGEMENT_TRACING_SAMPLING_PROBABILITY": "1.0",
+        "OTEL_EXPORTER_OTLP_ENDPOINT": "http://jaeger-collector.observability:4318",
+        "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+        "OTEL_LOGS_EXPORTER": "none",
+        "OTEL_METRICS_EXPORTER": "none",
+        "OTEL_PROPAGATORS": "tracecontext,baggage",
+        "OTEL_SERVICE_NAME": "episode",
+        "OTEL_TRACES_EXPORTER": "otlp"
       }
     },
     {
       "name": "playback",
-      "image": "hub.daenamu.local:8088/daenamu/playback:local",
+      "image": "hub.daenamu.local:8083/daenamu/playback:local",
       "service_port": "8082",
       "target_port": "8082",
-      "env": {}
+      "env": {
+        "JAVA_TOOL_OPTIONS": "-javaagent:/app/opentelemetry-javaagent.jar",
+        "MANAGEMENT_OTLP_TRACING_ENDPOINT": "http://jaeger-collector.observability:4318/v1/traces",
+        "MANAGEMENT_TRACING_SAMPLING_PROBABILITY": "1.0",
+        "OTEL_EXPORTER_OTLP_ENDPOINT": "http://jaeger-collector.observability:4318",
+        "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+        "OTEL_LOGS_EXPORTER": "none",
+        "OTEL_METRICS_EXPORTER": "none",
+        "OTEL_PROPAGATORS": "tracecontext,baggage",
+        "OTEL_SERVICE_NAME": "playback",
+        "OTEL_TRACES_EXPORTER": "otlp"
+      }
     },
     {
       "name": "frontend",
-      "image": "hub.daenamu.local:8088/daenamu/frontend:local",
+      "image": "hub.daenamu.local:8083/daenamu/frontend:local",
       "service_port": "80",
       "target_port": "80",
       "env": {}
@@ -82,7 +113,10 @@
     "infra/terraform/modules/daenamu-helm/variables.tf",
     "infra/terraform/modules/kind-cluster/main.tf",
     "infra/terraform/modules/kind-cluster/outputs.tf",
-    "infra/terraform/modules/kind-cluster/variables.tf"
+    "infra/terraform/modules/kind-cluster/variables.tf",
+    "infra/terraform/modules/observability/main.tf",
+    "infra/terraform/modules/observability/outputs.tf",
+    "infra/terraform/modules/observability/variables.tf"
   ],
   "topology": "frontend -> catalog -> episode -> playback",
   "uncertain": []
