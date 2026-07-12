@@ -16,6 +16,11 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
+REPORT_DIR = ROOT / "agent" / "reports"
+MARKDOWN_REPORT = REPORT_DIR / "latest-ground-truth.md"
+JSON_REPORT = REPORT_DIR / "latest-ground-truth.json"
+HELM_VALUES = ROOT / "infra" / "helm" / "daenamu" / "values.yaml"
+TERRAFORM_ROOT = ROOT / "infra" / "terraform"
 
 
 @dataclass(frozen=True)
@@ -27,6 +32,15 @@ class ServiceInfo:
     properties: str
     apis: tuple[str, ...]
     downstream: str
+
+
+@dataclass(frozen=True)
+class HelmServiceInfo:
+    name: str
+    image: str
+    service_port: str
+    target_port: str
+    env: dict[str, str]
 
 
 def read_text(path: Path) -> str:
@@ -120,7 +134,89 @@ def discover_services() -> list[ServiceInfo]:
     return sorted(services, key=lambda item: int(item.port) if item.port.isdigit() else 9999)
 
 
+def clean_value(value: str) -> str:
+    return value.strip().strip("\"'")
+
+
+def discover_helm_services() -> list[HelmServiceInfo]:
+    if not HELM_VALUES.exists():
+        return []
+
+    services: list[HelmServiceInfo] = []
+    registry = ""
+    project = ""
+    current: str | None = None
+    section: str | None = None
+    data: dict[str, dict[str, object]] = {}
+
+    for raw_line in read_text(HELM_VALUES).splitlines():
+        if not raw_line.strip() or raw_line.lstrip().startswith("#"):
+            continue
+
+        stripped = raw_line.strip()
+        indent = len(raw_line) - len(raw_line.lstrip(" "))
+
+        if indent == 2 and stripped.startswith("imageRegistry:"):
+            registry = clean_value(stripped.split(":", 1)[1])
+            continue
+        if indent == 2 and stripped.startswith("imageProject:"):
+            project = clean_value(stripped.split(":", 1)[1])
+            continue
+
+        if indent == 2 and stripped.endswith(":"):
+            name = stripped[:-1]
+            if name not in {"image", "service", "env"}:
+                current = name
+                section = None
+                data[current] = {"env": {}}
+            continue
+
+        if current is None:
+            continue
+
+        if indent == 4 and stripped.endswith(":"):
+            section = stripped[:-1]
+            continue
+
+        if indent >= 6 and ":" in stripped and section:
+            key, value = stripped.split(":", 1)
+            key = key.strip()
+            value = clean_value(value)
+            if section == "image":
+                data[current][f"image_{key}"] = value
+            elif section == "service":
+                data[current][f"service_{key}"] = value
+            elif section == "env":
+                env = data[current].setdefault("env", {})
+                if isinstance(env, dict):
+                    env[key] = value
+
+    for name, service in data.items():
+        repository = str(service.get("image_repository", name))
+        tag = str(service.get("image_tag", "local"))
+        image = f"{registry}/{project}/{repository}:{tag}" if registry and project else f"{repository}:{tag}"
+        services.append(
+            HelmServiceInfo(
+                name=name,
+                image=image,
+                service_port=str(service.get("service_port", "?")),
+                target_port=str(service.get("service_targetPort", "?")),
+                env=dict(service.get("env", {})),
+            )
+        )
+
+    return services
+
+
+def discover_terraform_files() -> list[str]:
+    if not TERRAFORM_ROOT.exists():
+        return []
+    return [str(path.relative_to(ROOT)) for path in sorted(TERRAFORM_ROOT.rglob("*.tf"))]
+
+
 def render_markdown(services: list[ServiceInfo]) -> str:
+    helm_services = discover_helm_services()
+    terraform_files = discover_terraform_files()
     lines = [
         "Ground Truth 추출 결과",
         "",
@@ -137,25 +233,67 @@ def render_markdown(services: list[ServiceInfo]) -> str:
         lines.append(f"- {service.controller}")
         lines.append(f"- {service.properties}")
 
-    if not (ROOT / "infra" / "k8s" / "base").exists():
-        lines.extend(["", "불확실한 항목:", "- infra/k8s/base 디렉터리가 없어 Kubernetes manifest 검증은 수행하지 못함"])
+    if helm_services:
+        lines.extend(["", "Helm 배포 정보:"])
+        for service in helm_services:
+            lines.append(
+                f"- {service.name}: image {service.image}, service port {service.service_port}, targetPort {service.target_port}"
+            )
+    else:
+        lines.extend(["", "불확실한 항목:", "- infra/helm/daenamu chart가 없어 Helm 배포 값 검증은 수행하지 못함"])
+
+    if terraform_files:
+        lines.extend(["", "Terraform 구성 파일:"])
+        lines.extend(f"- {path}" for path in terraform_files)
 
     return "\n".join(lines)
+
+
+def payload(services: list[ServiceInfo]) -> dict[str, object]:
+    helm_services = discover_helm_services()
+    terraform_files = discover_terraform_files()
+    missing = []
+    if not helm_services:
+        missing.append("infra/helm/daenamu chart가 없어 Helm 배포 값 검증은 수행하지 못함")
+
+    return {
+        "services": [asdict(service) for service in services],
+        "helm": [asdict(service) for service in helm_services],
+        "terraform": terraform_files,
+        "topology": "frontend -> " + " -> ".join(service.app_name for service in services),
+        "uncertain": missing,
+    }
+
+
+def write_reports(services: list[ServiceInfo]) -> None:
+    REPORT_DIR.mkdir(parents=True, exist_ok=True)
+    MARKDOWN_REPORT.write_text(render_markdown(services) + "\n", encoding="utf-8")
+    JSON_REPORT.write_text(json.dumps(payload(services), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Extract DAENAMU repository ground truth.")
     parser.add_argument("--json", action="store_true", help="print machine-readable JSON")
+    parser.add_argument("--no-write", action="store_true", help="do not write agent/reports files")
     args = parser.parse_args()
 
     services = discover_services()
     if not services:
         raise SystemExit("backend 서비스 정보를 찾지 못했습니다.")
 
+    if not args.no_write:
+        write_reports(services)
+
     if args.json:
-        print(json.dumps({"services": [asdict(service) for service in services]}, ensure_ascii=False, indent=2))
-    else:
-        print(render_markdown(services))
+        print(json.dumps(payload(services), ensure_ascii=False, indent=2))
+        return 0
+
+    print(render_markdown(services))
+    if not args.no_write:
+        print()
+        print("리포트 파일:")
+        print(f"- {MARKDOWN_REPORT.relative_to(ROOT)}")
+        print(f"- {JSON_REPORT.relative_to(ROOT)}")
 
     return 0
 

@@ -19,7 +19,7 @@
 - 관측 도구와 런타임 구성 정보
 
 README는 정답이 아니라 수정 대상이다. 실제 정답은 코드, 설정 파일, 인프라
-매니페스트, 런타임 관측 결과에서 찾아야 한다.
+Helm chart, values 파일, 런타임 관측 결과에서 찾아야 한다.
 
 ## 2. 절대 규칙
 
@@ -56,7 +56,7 @@ MVP 단계에서 에이전트가 수정할 수 있는 문서는 루트 `README.m
 1. Spring Boot 컨트롤러 코드
 2. Spring Boot 설정 파일
 3. 서비스 간 호출 클라이언트 코드
-4. Kubernetes 매니페스트
+4. Helm chart와 values 파일
 5. MCP를 통해 확인한 런타임 상태
 6. OpenAPI 문서 또는 live endpoint 메타데이터
 7. 기존 README 내용
@@ -71,6 +71,11 @@ MVP 단계에서 에이전트가 수정할 수 있는 문서는 루트 `README.m
 - `backend/playback/src/main/resources/application.properties`
 - `backend/catalog/src/main/java/com/daenamu/catalog/client/EpisodeClient.java`
 - `backend/episode/src/main/java/com/daenamu/episode/client/PlaybackClient.java`
+- `infra/helm/daenamu/Chart.yaml`
+- `infra/helm/daenamu/values.yaml`
+- `infra/terraform/envs/local-kind/*.tf`
+- `infra/terraform/envs/local/*.tf`
+- `infra/terraform/modules/**/*.tf`
 
 ## 5. 서비스 흐름 확인 규칙
 
@@ -90,7 +95,7 @@ MVP 단계에서 에이전트가 수정할 수 있는 문서는 루트 `README.m
 README 드리프트 작업은 아래 순서로 수행한다.
 
 1. 가능한 경우 git diff 또는 변경 파일 목록을 먼저 확인한다.
-2. 변경된 파일이 컨트롤러, 설정 파일, 클라이언트 코드, 인프라 매니페스트인지 분류한다.
+2. 변경된 파일이 컨트롤러, 설정 파일, 클라이언트 코드, Helm chart인지 분류한다.
 3. 코드에서 현재 서비스 이름, 포트, API 경로, 호출 흐름을 추출한다.
 4. 추출한 값과 README의 내용을 비교한다.
 5. 불일치가 명확하면 README 전체에서 해당 내용을 최소 범위로 수정한다.
