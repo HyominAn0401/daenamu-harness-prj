@@ -2,6 +2,7 @@
 .DS_Store
 
 # IDE local state
+.idea/
 .idea/workspace.xml
 .idea/modules/
 *.iml
@@ -17,3 +18,11 @@ infra/harbor/data/
 infra/harbor/common/
 infra/harbor/log/
 infra/harbor/secret/
+
+# Terraform local/runtime state
+**/.terraform/
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.*
+**/terraform.tfvars
+!**/terraform.tfvars.example
