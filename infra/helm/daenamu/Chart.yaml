@@ -1,0 +1,6 @@
+apiVersion: v2
+name: daenamu
+description: DAENAMU local MSA deployment chart
+type: application
+version: 0.1.0
+appVersion: "local"
