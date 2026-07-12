@@ -15,6 +15,9 @@ WORKDIR /app
 
 RUN addgroup -S spring && adduser -S spring -G spring
 
+RUN wget -O /app/opentelemetry-javaagent.jar \
+    https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.6.0/opentelemetry-javaagent.jar
+
 COPY --from=build /workspace/build/libs/*.jar app.jar
 
 USER spring

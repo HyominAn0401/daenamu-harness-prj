@@ -9,10 +9,16 @@ import org.springframework.web.client.RestClient;
 public class CatalogClientConfig {
 
 	@Bean
+	RestClient.Builder restClientBuilder() {
+		return RestClient.builder();
+	}
+
+	@Bean
 	RestClient episodeRestClient(
+			RestClient.Builder restClientBuilder,
 			@Value("${daenamu.episode.base-url}") String episodeBaseUrl
 	) {
-		return RestClient.builder()
+		return restClientBuilder
 				.baseUrl(episodeBaseUrl)
 				.build();
 	}

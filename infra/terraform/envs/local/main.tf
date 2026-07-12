@@ -25,6 +25,14 @@ provider "helm" {
   }
 }
 
+module "observability" {
+  source = "../../modules/observability"
+
+  namespace        = var.observability_namespace
+  create_namespace = var.create_observability_namespace
+  jaeger_image     = var.jaeger_image
+}
+
 module "daenamu_helm" {
   source = "../../modules/daenamu-helm"
 
@@ -41,4 +49,6 @@ module "daenamu_helm" {
   service_type           = var.service_type
   helm_timeout_seconds   = var.helm_timeout_seconds
   create_namespace       = var.create_namespace
+
+  depends_on = [module.observability]
 }

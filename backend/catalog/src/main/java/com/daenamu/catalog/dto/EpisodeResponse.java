@@ -6,6 +6,7 @@ public record EpisodeResponse(
 		int episodeNumber,
 		String title,
 		Integer durationSeconds,
-		String playbackUrl
+		String playbackUrl,
+		PlaybackResponse playback
 ) {
 }

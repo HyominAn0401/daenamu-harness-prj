@@ -29,6 +29,9 @@ public class CatalogService {
 
 	public DramaDetailResponse getDrama(String dramaId) {
 		Drama drama = findDrama(dramaId);
+		List<com.daenamu.catalog.dto.EpisodeResponse> episodes = episodeClient.getEpisodes(dramaId).stream()
+				.map(episode -> episodeClient.getEpisode(episode.id()))
+				.toList();
 
 		return new DramaDetailResponse(
 				drama.getId(),
@@ -36,7 +39,7 @@ public class CatalogService {
 				drama.getGenre(),
 				drama.getDescription(),
 				drama.getReleaseDate(),
-				episodeClient.getEpisodes(dramaId)
+				episodes
 		);
 	}
 

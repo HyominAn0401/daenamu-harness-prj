@@ -29,4 +29,11 @@ public class EpisodeClient {
 
 		return episodes;
 	}
+
+	public EpisodeResponse getEpisode(String episodeId) {
+		return episodeRestClient.get()
+				.uri("/api/episodes/{episodeId}", episodeId)
+				.retrieve()
+				.body(EpisodeResponse.class);
+	}
 }

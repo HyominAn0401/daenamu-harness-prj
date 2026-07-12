@@ -16,6 +16,24 @@ variable "namespace" {
   default     = "daenamu"
 }
 
+variable "observability_namespace" {
+  description = "Kubernetes namespace for Jaeger and observability tools."
+  type        = string
+  default     = "observability"
+}
+
+variable "create_observability_namespace" {
+  description = "Whether Terraform should create the observability namespace."
+  type        = bool
+  default     = true
+}
+
+variable "jaeger_image" {
+  description = "Jaeger all-in-one image with OTLP collector enabled."
+  type        = string
+  default     = "jaegertracing/all-in-one:1.57"
+}
+
 variable "create_namespace" {
   description = "Whether Terraform should create the DAENAMU namespace."
   type        = bool
