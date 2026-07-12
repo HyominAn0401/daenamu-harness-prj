@@ -9,10 +9,16 @@ import org.springframework.web.client.RestClient;
 public class EpisodeClientConfig {
 
 	@Bean
+	RestClient.Builder restClientBuilder() {
+		return RestClient.builder();
+	}
+
+	@Bean
 	RestClient playbackRestClient(
+			RestClient.Builder restClientBuilder,
 			@Value("${daenamu.playback.base-url}") String playbackBaseUrl
 	) {
-		return RestClient.builder()
+		return restClientBuilder
 				.baseUrl(playbackBaseUrl)
 				.build();
 	}

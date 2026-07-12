@@ -1,6 +1,7 @@
 kubeconfig_path  = "~/.kube/config"
 kube_context     = "kind-daenamu"
 namespace        = "daenamu"
+observability_namespace = "observability"
 release_name     = "daenamu"
 image_registry   = "hub.daenamu.local:8083"
 image_project    = "daenamu"

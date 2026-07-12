@@ -1,16 +1,15 @@
 # observability Terraform Module
 
-This module is intentionally not implemented yet.
+Installs local observability components for DAENAMU.
 
-Planned responsibility:
+Current scope:
 
-- install Jaeger through Helm,
-- optionally install Prometheus and Grafana,
-- expose trace/metric endpoints for the Agent Harness,
-- provide values that can be compared against README observability sections.
+- Jaeger all-in-one deployment,
+- Jaeger query service for the UI,
+- Jaeger collector service with OTLP HTTP and gRPC ports.
 
-Reason for deferring:
+Spring Boot services export traces to:
 
-- The current MVP first needs a stable local cluster, Harbor image flow, and
-  DAENAMU Helm release.
-- Jaeger should be added after service deployment is repeatable.
+```text
+http://jaeger-collector.observability:4318/v1/traces
+```

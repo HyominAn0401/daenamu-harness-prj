@@ -1,1 +1,1 @@
-{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"daenamu_helm","Source":"../../modules/daenamu-helm","Dir":"../../modules/daenamu-helm"}]}
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"daenamu_helm","Source":"../../modules/daenamu-helm","Dir":"../../modules/daenamu-helm"},{"Key":"observability","Source":"../../modules/observability","Dir":"../../modules/observability"}]}

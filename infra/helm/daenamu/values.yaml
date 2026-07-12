@@ -16,7 +16,7 @@ defaults:
       cpu: 500m
       memory: 512Mi
   probes:
-    enabled: false
+    enabled: true
     path: /actuator/health
     initialDelaySeconds: 20
     periodSeconds: 10
@@ -38,6 +38,16 @@ services:
       path: /actuator/health
     env:
       EPISODE_BASE_URL: http://episode:8081
+      JAVA_TOOL_OPTIONS: -javaagent:/app/opentelemetry-javaagent.jar
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger-collector.observability:4318/v1/traces
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger-collector.observability:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_LOGS_EXPORTER: none
+      OTEL_METRICS_EXPORTER: none
+      OTEL_PROPAGATORS: tracecontext,baggage
+      OTEL_SERVICE_NAME: catalog
+      OTEL_TRACES_EXPORTER: otlp
 
   episode:
     enabled: true
@@ -53,6 +63,16 @@ services:
       path: /actuator/health
     env:
       PLAYBACK_BASE_URL: http://playback:8082
+      JAVA_TOOL_OPTIONS: -javaagent:/app/opentelemetry-javaagent.jar
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger-collector.observability:4318/v1/traces
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger-collector.observability:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_LOGS_EXPORTER: none
+      OTEL_METRICS_EXPORTER: none
+      OTEL_PROPAGATORS: tracecontext,baggage
+      OTEL_SERVICE_NAME: episode
+      OTEL_TRACES_EXPORTER: otlp
 
   playback:
     enabled: true
@@ -66,7 +86,17 @@ services:
       targetPort: 8082
     probes:
       path: /actuator/health
-    env: {}
+    env:
+      JAVA_TOOL_OPTIONS: -javaagent:/app/opentelemetry-javaagent.jar
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger-collector.observability:4318/v1/traces
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger-collector.observability:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_LOGS_EXPORTER: none
+      OTEL_METRICS_EXPORTER: none
+      OTEL_PROPAGATORS: tracecontext,baggage
+      OTEL_SERVICE_NAME: playback
+      OTEL_TRACES_EXPORTER: otlp
 
   frontend:
     enabled: true

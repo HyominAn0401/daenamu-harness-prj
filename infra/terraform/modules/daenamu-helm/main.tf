@@ -75,6 +75,11 @@ resource "helm_release" "this" {
   }
 
   set {
+    name  = "defaults.probes.enabled"
+    value = "true"
+  }
+
+  set {
     name  = "services.catalog.image.tag"
     value = var.image_tag
   }
@@ -92,6 +97,156 @@ resource "helm_release" "this" {
   set {
     name  = "services.frontend.image.tag"
     value = var.image_tag
+  }
+
+  set {
+    name  = "services.catalog.env.MANAGEMENT_OTLP_TRACING_ENDPOINT"
+    value = "http://jaeger-collector.observability:4318/v1/traces"
+  }
+
+  set {
+    name  = "services.catalog.env.MANAGEMENT_TRACING_SAMPLING_PROBABILITY"
+    value = "1.0"
+  }
+
+  set {
+    name  = "services.catalog.env.JAVA_TOOL_OPTIONS"
+    value = "-javaagent:/app/opentelemetry-javaagent.jar"
+  }
+
+  set {
+    name  = "services.catalog.env.OTEL_SERVICE_NAME"
+    value = "catalog"
+  }
+
+  set {
+    name  = "services.catalog.env.OTEL_TRACES_EXPORTER"
+    value = "otlp"
+  }
+
+  set {
+    name  = "services.catalog.env.OTEL_EXPORTER_OTLP_ENDPOINT"
+    value = "http://jaeger-collector.observability:4318"
+  }
+
+  set {
+    name  = "services.catalog.env.OTEL_EXPORTER_OTLP_PROTOCOL"
+    value = "http/protobuf"
+  }
+
+  set {
+    name  = "services.catalog.env.OTEL_METRICS_EXPORTER"
+    value = "none"
+  }
+
+  set {
+    name  = "services.catalog.env.OTEL_LOGS_EXPORTER"
+    value = "none"
+  }
+
+  set {
+    name  = "services.catalog.env.OTEL_PROPAGATORS"
+    value = "tracecontext\\,baggage"
+  }
+
+  set {
+    name  = "services.episode.env.MANAGEMENT_OTLP_TRACING_ENDPOINT"
+    value = "http://jaeger-collector.observability:4318/v1/traces"
+  }
+
+  set {
+    name  = "services.episode.env.MANAGEMENT_TRACING_SAMPLING_PROBABILITY"
+    value = "1.0"
+  }
+
+  set {
+    name  = "services.episode.env.JAVA_TOOL_OPTIONS"
+    value = "-javaagent:/app/opentelemetry-javaagent.jar"
+  }
+
+  set {
+    name  = "services.episode.env.OTEL_SERVICE_NAME"
+    value = "episode"
+  }
+
+  set {
+    name  = "services.episode.env.OTEL_TRACES_EXPORTER"
+    value = "otlp"
+  }
+
+  set {
+    name  = "services.episode.env.OTEL_EXPORTER_OTLP_ENDPOINT"
+    value = "http://jaeger-collector.observability:4318"
+  }
+
+  set {
+    name  = "services.episode.env.OTEL_EXPORTER_OTLP_PROTOCOL"
+    value = "http/protobuf"
+  }
+
+  set {
+    name  = "services.episode.env.OTEL_METRICS_EXPORTER"
+    value = "none"
+  }
+
+  set {
+    name  = "services.episode.env.OTEL_LOGS_EXPORTER"
+    value = "none"
+  }
+
+  set {
+    name  = "services.episode.env.OTEL_PROPAGATORS"
+    value = "tracecontext\\,baggage"
+  }
+
+  set {
+    name  = "services.playback.env.MANAGEMENT_OTLP_TRACING_ENDPOINT"
+    value = "http://jaeger-collector.observability:4318/v1/traces"
+  }
+
+  set {
+    name  = "services.playback.env.MANAGEMENT_TRACING_SAMPLING_PROBABILITY"
+    value = "1.0"
+  }
+
+  set {
+    name  = "services.playback.env.JAVA_TOOL_OPTIONS"
+    value = "-javaagent:/app/opentelemetry-javaagent.jar"
+  }
+
+  set {
+    name  = "services.playback.env.OTEL_SERVICE_NAME"
+    value = "playback"
+  }
+
+  set {
+    name  = "services.playback.env.OTEL_TRACES_EXPORTER"
+    value = "otlp"
+  }
+
+  set {
+    name  = "services.playback.env.OTEL_EXPORTER_OTLP_ENDPOINT"
+    value = "http://jaeger-collector.observability:4318"
+  }
+
+  set {
+    name  = "services.playback.env.OTEL_EXPORTER_OTLP_PROTOCOL"
+    value = "http/protobuf"
+  }
+
+  set {
+    name  = "services.playback.env.OTEL_METRICS_EXPORTER"
+    value = "none"
+  }
+
+  set {
+    name  = "services.playback.env.OTEL_LOGS_EXPORTER"
+    value = "none"
+  }
+
+  set {
+    name  = "services.playback.env.OTEL_PROPAGATORS"
+    value = "tracecontext\\,baggage"
   }
 
   depends_on = [
